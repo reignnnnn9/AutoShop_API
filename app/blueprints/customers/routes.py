@@ -17,7 +17,6 @@ def create_customer():
     db.session.add(new_customer)
     db.session.commit()
     return customer_schema.jsonify(new_customer), 201
-#*****CAN CREATE DUPLICATE CUSTOMERS*****
 
 # Read/View all customers
 @customer_bp.route('', methods=['GET'])
@@ -28,9 +27,9 @@ def read_customers():
 # Read/View one customer by id - Using a Dynamic Endpoint
 @customer_bp.route('<int:customer_id>', methods=['GET'])
 def read_cust(customer_id):
-    cust = db.session.query(Customers, customer_id)
+    cust = db.session.get(Customers, customer_id)
+    print(cust)
     return customer_schema.jsonify(cust), 200
-#*****DOES NOT RETURN CUSTOMER INFO BUT RETURNS 200*****
 
 # Delete customer
 @customer_bp.route('<int:customer_id>', methods=['DELETE'])

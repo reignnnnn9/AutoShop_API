@@ -22,12 +22,15 @@ class Customers(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(50), nullable=False)
-    email: Mapped[str] = mapped_column(String(100), nullable=False)
+    email: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
     phone: Mapped[str] = mapped_column(String(20), nullable=False)
     address: Mapped[str] = mapped_column(String(100), nullable=True)
     DOB: Mapped[date] = mapped_column(Date, nullable=False)
 
     service_tickets: Mapped[list['ServiceTickets']] = relationship('ServiceTickets', back_populates='customer')
+
+    def __repr__(self):
+        return f'Customer Name: {self.name}, Customer Email: {self.email}'
 
 class ServiceTickets(Base):
     __tablename__ = 'service_tickets'
