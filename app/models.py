@@ -10,12 +10,6 @@ class Base(DeclarativeBase):
 # Instantiate your SQLAlchemy database
 db = SQLAlchemy(model_class=Base)
 
-ticket_mechanics = db.Table(
-    'ticket_mechanics',
-    Base.metadata,
-    db.Column('service_ticket_id', db.ForeignKey('service_tickets.id')),
-    db.Column('mechanic_id', db.ForeignKey('mechanics.id'))
-)
 
 class Customers(Base):
     __tablename__ = 'customers'
@@ -32,6 +26,13 @@ class Customers(Base):
     def __repr__(self):
         return f'Customer Name: {self.name}, Customer Email: {self.email}'
 
+ticket_mechanics = db.Table(
+    'ticket_mechanics',
+    Base.metadata,
+    db.Column('ticket_id', db.ForeignKey('service_tickets.id'), primary_key=True),
+    db.Column('mechanic_id', db.ForeignKey('mechanics.id'), primary_key=True)
+)
+
 class ServiceTickets(Base):
     __tablename__ = 'service_tickets'
 
@@ -39,7 +40,7 @@ class ServiceTickets(Base):
     customer_id: Mapped[int] = mapped_column(ForeignKey('customers.id'))
     ser_desc: Mapped[str] = mapped_column(String(500), nullable=False)
     price: Mapped[float] = mapped_column(Float, nullable=False)
-    VIN: Mapped[str] = mapped_column(String(17), nullable=False)
+    VIN: Mapped[str] = mapped_column(String(17), nullable=False, unique=True)
     ser_date: Mapped[date] = mapped_column(Date, nullable=False)
 
     customer: Mapped[list['Customers']] = relationship('Customers', back_populates='service_tickets')
@@ -50,8 +51,8 @@ class Mechanics(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(50), nullable=False)
-    email: Mapped[str] = mapped_column(String(100), nullable=False)
+    email: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
     phone: Mapped[str] = mapped_column(String(20), nullable=False)
-    salary: Mapped[float] = mapped_column(Float, nullable=False)
+    salary: Mapped[float] = mapped_column(Float(), nullable=False)
 
     service_tickets: Mapped[list['ServiceTickets']] = relationship('ServiceTickets', secondary=ticket_mechanics, back_populates='mechanics')
