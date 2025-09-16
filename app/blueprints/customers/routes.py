@@ -11,10 +11,10 @@ from sqlalchemy import select
 def login():
     try:
         credentials = request.json
-        username  = credentials['email']
+        username  = credentials['username']
         password  = credentials['password']
     except KeyError:
-        return jsonify({'message': 'Invalid payload, expecting email and DOB'})
+        return jsonify({'message': 'Invalid payload, expecting email and password'})
     
     query = select(Customers).where(Customers.email == username)
     customer = db.session.execute(query).scalar_one_or_none() # Query customer table
