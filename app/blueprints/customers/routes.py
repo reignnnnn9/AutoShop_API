@@ -69,7 +69,8 @@ def delete_customer(customer_id):
     return jsonify({"message": f"Successfully deleted customer {customer_id}"}), 200
 
 # Update customer
-@customer_bp.route('<int:customer_id>', methods=['PUT'])
+@customer_bp.route('', methods=['PUT'])
+@token_required
 def update_customer(customer_id):
     customer = db.session.get(Customers, customer_id) # Query for who to update
 
