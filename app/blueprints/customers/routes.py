@@ -1,25 +1,24 @@
 from app.blueprints.customers import customer_bp
-from .schemas import customer_schema, customers_schema
+from .schemas import customer_schema, customers_schema, login_schema
 from flask import request, jsonify
 from marshmallow import ValidationError
 from app.models import Customers, db
 from app.utils.util import encode_token, token_required
 from sqlalchemy import select
+from app.extensions import limiter, cache
 
 # Create login function using token authentication
 @customer_bp.route('/login', methods=['POST'])
 def login():
     try:
-        credentials = request.json
-        username  = credentials['username']
-        password  = credentials['password']
+        credentials = login_schema.load(request.json)
     except KeyError:
         return jsonify({'message': 'Invalid payload, expecting email and password'})
     
-    query = select(Customers).where(Customers.email == username)
+    query = select(Customers).where(Customers.email == credentials['username'])
     customer = db.session.execute(query).scalar_one_or_none() # Query customer table
 
-    if customer and customer.password == password:
+    if customer and customer.password == credentials['password']:
         auth_token = encode_token(customer.id)
 
         response = {
@@ -35,6 +34,7 @@ def login():
 # Create new customer
 # Create route
 @customer_bp.route('', methods=['POST']) # Route serves as trigger for below function
+@limiter.limit("5 per hour")
 def create_customer():
     try:
         data = customer_schema.load(request.json)
@@ -48,6 +48,7 @@ def create_customer():
 
 # Read/View all customers
 @customer_bp.route('', methods=['GET'])
+@cache.cached(timeout=60)
 def read_customers():
     customers = db.session.query(Customers).all()
     return customers_schema.jsonify(customers), 200

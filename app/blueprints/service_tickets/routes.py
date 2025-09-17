@@ -4,6 +4,7 @@ from app.blueprints.mechanics.schemas import mechanic_schema, mechanics_schema
 from flask import request, jsonify
 from marshmallow import ValidationError
 from app.models import ServiceTickets, Mechanics, db, ticket_mechanics
+from app.extensions import cache
 
 @ticket_bp.route('', methods=['POST'])
 def create_ticket():
@@ -60,6 +61,7 @@ def remove_mech(ticket_id, mechanic_id):
 
 
 @ticket_bp.route('', methods=['GET'])
+@cache.cached(timeout=60)
 def read_tickets():
     tickets = db.session.query(ServiceTickets).all()
     return tickets_schema.jsonify(tickets), 200
