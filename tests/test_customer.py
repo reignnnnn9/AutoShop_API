@@ -36,9 +36,59 @@ class TestCustomer(unittest.TestCase):
         self.assertEqual(response.json['name'], 'test_customer') # Checking to make sure the username is equal to test_customer, as it is set in the testcase
         self.assertTrue(check_password_hash(response.json['password'], "123"))
 
-    # def test_invalid_user(self):
+    def test_invalid_customer(self):
+        customer_payload = { # Missing email which is a required field
+            "name": "test_customer",
+            "password": "123",
+            "phone": "123-456-7891",
+            "address": " ",
+            "DOB": "1996-03-06"
+        }
+        response = self.client.post("/customers", json=customer_payload)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('email', response.json) # Membership check that email is in the response json
 
-    # def test_login(self):
-    #     login_creds = {
+    def test_login(self):
+        login_creds = {
+            "email": "test_cust@email.com",
+            "password": "123"
+        }
+        response = self.client.post("/customers/login", json=login_creds)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('auth_token', response.json)
 
-    #     }
+    def test_read_customers(self):
+        response = self.client.get('/customers')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['name'])
+
+    def test_read_cust(self):
+        response = self.client.get('/customers')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json[0]['name'], 'test_customer')
+
+    def test_delete_customer(self):
+        headers = {'Authorization': "Bearer" + self.token}
+        response = self.client.delete('/customers', headers=headers)
+        self.assertEqual(response.status, 200)
+        self.assertEqual(response.json['message'], 'Successfully deleted user 1')
+
+    def test_unauthorized_delete(self):
+        response = self.client.delete('/customers')
+        self.assertEqual(response.status, 404)
+        self.assertEqual(response.json['message'], 'Token is missing!')
+
+    def test_update_customer(self):
+        headers = {'Authorization': "Bearer" + self.token}
+        update_payload = {
+            "name": "Test Cust",
+            "email": "tc@email.com",
+            "password": "123",
+            "phone": "123-456-7891",
+            "address": "123 Main St",
+            "DOB": "1996-03-06"
+        }
+        response = self.client.put('/customers', headers=headers, json=update_payload)
+        print(response.json)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['email'], 'tc@email.com')
