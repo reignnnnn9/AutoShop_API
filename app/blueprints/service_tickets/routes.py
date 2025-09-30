@@ -3,7 +3,7 @@ from .schemas import ticket_schema, tickets_schema
 from app.blueprints.mechanics.schemas import mechanic_schema, mechanics_schema
 from flask import request, jsonify
 from marshmallow import ValidationError
-from app.models import ServiceTickets, Mechanics, db, ticket_mechanics
+from app.models import ServiceTickets, Mechanics, db, TicketInventory
 from app.extensions import cache
 
 @ticket_bp.route('', methods=['POST'])
@@ -65,3 +65,10 @@ def remove_mech(ticket_id, mechanic_id):
 def read_tickets():
     tickets = db.session.query(ServiceTickets).all()
     return tickets_schema.jsonify(tickets), 200
+
+@ticket_bp.route('<int:service_tickets_id>/add-item/<int:inventory_id>/<int:qty>', methods=['PUT'])
+def add_part_to_ticket(service_tickets_id, inventory_id, qty):
+    new_ticket_part = TicketInventory(inv_id=inventory_id, ticket_id=service_tickets_id, quantity=qty)
+    db.session.add(new_ticket_part)
+    db.session.commit()
+    return jsonify({"message": "Successfully added part to service ticket"})

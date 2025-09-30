@@ -6,6 +6,8 @@ from app.models import Customers, db
 from app.utils.util import encode_token, token_required
 from sqlalchemy import select
 from app.extensions import limiter, cache
+from werkzeug.security import check_password_hash, generate_password_hash
+
 
 # Create login function using token authentication
 @customer_bp.route('/login', methods=['POST'])
@@ -18,16 +20,16 @@ def login():
     query = select(Customers).where(Customers.email == credentials['username'])
     customer = db.session.execute(query).scalar_one_or_none() # Query customer table
 
-    if customer and customer.password == credentials['password']:
+    if customer and check_password_hash(customer.password, credentials['password']):
         auth_token = encode_token(customer.id)
 
         response = {
-            'auth_token': auth_token,
             'status': 'success',
-            'message': 'Successfully logged in'
+            'message': 'Successfully logged in',
+            'auth_token': auth_token
         }
 
-        return jsonify(response)
+        return jsonify(response), 200
     else:
         return jsonify({'messsage': 'Invalid email or password'})
 
@@ -40,6 +42,12 @@ def create_customer():
         data = customer_schema.load(request.json)
     except ValidationError as e:
         return jsonify(e.messages), 400 # Returns error as response
+    
+    taken = db.session.query(Customers).where(Customers.email==data['email']).first()
+    if taken:
+        return jsonify({'message': 'email is taken'}), 400
+    
+    data['password'] = generate_password_hash(data['password'])
     
     new_customer = Customers(**data) # Creating Customer object
     db.session.add(new_customer)

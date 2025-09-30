@@ -1,7 +1,7 @@
-from datetime import date
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import Date, ForeignKey, String, Table, Column, Float
+from sqlalchemy import Date, ForeignKey, String, Table, Column, Float, Integer
+from datetime import date
 
 # Create a base class for models
 class Base(DeclarativeBase):
@@ -46,6 +46,7 @@ class ServiceTickets(Base):
 
     customer: Mapped[list['Customers']] = relationship('Customers', back_populates='service_tickets')
     mechanics: Mapped[list['Mechanics']] = relationship('Mechanics', secondary=ticket_mechanics, back_populates='service_tickets')
+    tick_inv: Mapped[list['TicketInventory']] = relationship('TicketInventory', back_populates='service_tickets')
 
 class Mechanics(Base):
     __tablename__ = 'mechanics'
@@ -57,3 +58,23 @@ class Mechanics(Base):
     salary: Mapped[float] = mapped_column(Float(), nullable=False)
 
     service_tickets: Mapped[list['ServiceTickets']] = relationship('ServiceTickets', secondary=ticket_mechanics, back_populates='mechanics')
+
+class Inventory(Base):
+    __tablename__ = 'inventory'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    part: Mapped[str] = mapped_column(String(50), nullable=False)
+    price: Mapped[float] = mapped_column(Float, nullable=False)
+
+    tick_inv: Mapped[list['TicketInventory']] = relationship('TicketInventory', back_populates='inventory')
+
+class TicketInventory(Base):
+    __tablename__ = "ticket_inventory"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    inv_id: Mapped[int] = mapped_column(ForeignKey('inventory.id'), nullable=False)
+    ticket_id: Mapped[int] = mapped_column(ForeignKey('service_tickets.id'), nullable=True)
+    quantity: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    inventory: Mapped['Inventory'] = relationship('Inventory', back_populates='tick_inv')
+    service_tickets: Mapped['ServiceTickets'] = relationship('ServiceTickets', back_populates='tick_inv')
