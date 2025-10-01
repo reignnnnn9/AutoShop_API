@@ -2,9 +2,9 @@ from datetime import datetime, timedelta, timezone
 from functools import wraps
 from flask import request, jsonify
 from jose import jwt
-import jose
+import jose, os
 
-SECRET_KEY = "A super secret, secret key"
+SECRET_KEY = os.environ.get('SECRET_KEY') or "super secret secrets"
 
 def token_required(f):
     @wraps(f)
