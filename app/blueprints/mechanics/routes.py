@@ -61,7 +61,7 @@ def delete_mech(mechanic_id):
     mech = db.session.get(Mechanics, mechanic_id)
     db.session.delete(mech)
     db.session.commit()
-    return jsonify({"message": f"Succesfully deleted mechanic {mechanic_id}"}), 200
+    return jsonify({"message": f"Successfully deleted mechanic {mechanic_id}"}), 200
 
 # Get popular Mechanics
 @mechanic_bp.route('/popularity', methods=['GET'])

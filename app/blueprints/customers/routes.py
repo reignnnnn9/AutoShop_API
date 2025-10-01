@@ -17,7 +17,7 @@ def login():
     except KeyError:
         return jsonify({'message': 'Invalid payload, expecting email and password'})
     
-    query = select(Customers).where(Customers.email == credentials['username'])
+    query = select(Customers).where(Customers.email == credentials['email'])
     customer = db.session.execute(query).scalar_one_or_none() # Query customer table
 
     if customer and check_password_hash(customer.password, credentials['password']):
