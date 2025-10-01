@@ -68,7 +68,7 @@ class TestCustomer(unittest.TestCase):
         self.assertEqual(response.json[0]['name'], 'test_customer')
 
     def test_delete_customer(self):
-        headers = {'Authorization': "Bearer" + self.token}
+        headers = {'Authorization': "Bearer " + self.token}
         response = self.client.delete('/customers', headers=headers)
         self.assertEqual(response.status, 200)
         self.assertEqual(response.json['message'], 'Successfully deleted user 1')
