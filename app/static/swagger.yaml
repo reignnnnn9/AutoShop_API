@@ -1,0 +1,245 @@
+# http://localhost:5000/api/docs/ # Use this link to look at docs in web browser
+
+swagger: '2.0'
+info:
+  title: "Mechanic API"
+  description: "This is an API"
+  version: "1.0.0"
+host: "127.0.0.1:5000"
+schemes:
+  - "https"
+  - "http"
+consumes:
+  - "application/json" # My api receives JSON data
+produces:
+  - "application/json" # My api produces JSON data
+
+securityDefinitions: # Describing how to add token auth to the endpoints
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+
+paths: 
+
+  /customers/login:
+    post:
+      tags:
+        - Customers
+      summary: "Login endpoint, (generates token)"
+      description: "Validates customer credentials, generates and return a customer specific token."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Login Credentials"
+          required: true
+          schema:
+            $ref: "#/definitions/LoginCredentials"
+      responses:
+        200:
+          description: "Login successful"
+          schema:
+            $ref: "#/definitions/LoginResponse"
+          examples:
+            application/json:
+              message: "Welcome Customer"
+              token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOj..."
+
+
+  /customers: #endpoint
+    post: #Post request
+      tags:
+        - Customers
+      summary: "Endpoint to create/register a new customer."
+      description: "Endpoint to create a new customer in AutoShop system, emails must be unique."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Information required to create a new Customer."
+          required: true
+          schema:
+            $ref: "#/definitions/CustomerInput"
+      responses:
+        201:
+          descriptions: "Successful Customer Creation"
+          schema:
+            $ref: "#/definitions/CustomerResponse"
+          examples:
+            application/json:
+              id: 1
+              name: "John Doe"
+              email: "johnd@email.com"
+              password: "<encrypted password>" 
+              phone: "123-456-7890"
+              address: "1234 Main St, City, State 12345"   
+              DOB: "1900-01-01"
+
+    get: # Get all users Endpoint
+      tags:
+        - Customers
+      summary: "Returns all customers"
+      description: "Endpoint to retrieve an array of customer objects."
+      responses:
+        200:
+          description: "Successfully Retrieved Customers"           
+          schema:
+            $ref: "#/definitions/CustomersResponse"
+
+    put: # Update a customer
+      tags:
+        - Customers
+      summary: "Update Customer Endpoint"
+      description: "Endpoint to update a customer, requires a token, customer will be identified by the token"
+      security:
+        - bearerAuth: [] # Referencing our Token Auth definition (Make sure when authorizing in Swagger you add Bearer <Token>)
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Customer Updates"
+          required: true
+          schema:
+            $ref: "#/definitions/CustomerInput"
+      responses:
+        200:
+          description: "Update Successful"
+          schema:
+            $ref: "#/definitions/CustomerResponse"
+          examples:
+            application/json:
+              id: "0"
+              name: "John Doe"
+              email: "johnd@email.com"
+              password: "<encrypted password>" 
+              phone: "123-456-7890"
+              address: "1234 Main St, City, State 12345"  
+              DOB: "1900-01-01"
+    
+    delete: # Delete a Customer
+      tags:
+        - Customers
+      summary: "Delete a Customer"
+      description: "Delete a Customer, requires a token, token will be used to identify customer to delete"
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+
+
+  /mechanics:
+    post:
+      tags:
+        - Mechanics
+      summary: "Endpoint to generate a new mechanic"
+      description: "Endpoint to create a new mechanic in AutoShop system, emails must be unique."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Information required to create a new mechanic."
+          required: true
+          schema:
+            $ref: "#/definitions/MechanicInput"
+      responses:
+        201:
+          description: "Mechanic Creation Successful"
+          schema:
+            $ref: "#/definitions/MechanicResponse"
+
+
+    # get:
+
+    # put:
+
+    # delete:
+
+
+definitions:
+
+  LoginCredentials:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+      password:
+        type: "string"
+      
+    required:
+      - email
+      - password
+    
+  LoginResponse:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+      status:
+        type: "string"
+      message:
+        type: "string"
+
+  CustomerInput:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      phone:
+        type: "string"
+      address:
+        type: "string"
+      DOB:
+        type: "string"
+        format: date
+      
+    required:
+      - name
+      - email
+      - DOB
+      - password
+
+  CustomerResponse:
+    type: "object"
+    properties:
+      id:
+        type: "int"
+      name:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      phone:
+        type: "string"
+      address:
+        type: "string"
+      DOB:
+        type: "string"
+        format: date
+    
+    CustomersResponse:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          id:
+            type: "int"
+          name:
+            type: "string"
+          email:
+            type: "string"
+          password:
+            type: "string"
+          phone:
+            type: "string"
+          address:
+            type: "string"
+          DOB:
+            type: "string"
+            format: date
