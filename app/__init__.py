@@ -33,5 +33,7 @@ def create_app(config_name):
     app.register_blueprint(customer_bp, url_prefix='/customers')
     app.register_blueprint(mechanic_bp, url_prefix='/mechanics')
     app.register_blueprint(ticket_bp, url_prefix='/service_tickets')
+    app.register_blueprint(part_bp, url_prefix='/parts')
+    app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
     return app

@@ -57,11 +57,6 @@ class TestCustomer(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('auth_token', response.json)
 
-    def test_read_customers(self): # Do I even need this? Since only 1 customer
-        response = self.client.get('/customers')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json[0]['DOB'], '1993-11-09')
-
     def test_read_cust(self):
         response = self.client.get('/customers')
         self.assertEqual(response.status_code, 200)

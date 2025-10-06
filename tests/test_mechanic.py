@@ -28,8 +28,6 @@ class TestMechanic(unittest.TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json['name'], 'test2')
 
-    # def test_read_mechanics(self): # Do I need since only 1 mech?
-
     def test_read_mech(self):
         response = self.client.get('/mechanics')
         self.assertEqual(response.status_code, 200)
@@ -52,7 +50,17 @@ class TestMechanic(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json['message'], 'Successfully deleted mechanic 1')
 
-    # def test_get_pop_mech(self):
-        # response = self.client.get('/mechanics')
+    def test_get_pop_mech(self):
+        response = self.client.get('/mechanics/popularity')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json[0]['mech'], {})
 
-    # def test_search_mech(self):
+    def test_search_mech(self):
+        response = self.client.get('/mechanics/search?name=test')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json[0]['name'], 'test')
+
+    def test_search_invalid_mech(self):
+        response = self.client.get('/mechanics/search?name=Skai')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(response.json['message'], 'Invalid search, no mechanics with that name')

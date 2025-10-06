@@ -79,7 +79,7 @@ def get_popular_mechs():
         }
         output.append(mech_format) # Appends this dict to an output list
 
-    return jsonify(output)
+    return jsonify(output), 200
 
 
 # Search for mechanic based on name or email
@@ -90,7 +90,11 @@ def search_mech():
 
     if name:
         mechs = db.session.query(Mechanics).where(Mechanics.name.like(f'%{name}%')).all()
+        if not mechs:
+            return jsonify({"message": "Invalid search, no mechanics with that name"}), 400 
     elif email:
         mechs = db.session.query(Mechanics).where(Mechanics.email.like(f'%{email}%')).all()
+        if not mechs:
+            return jsonify({"message": "Invalid search, no mechanics with that email"}), 400
 
     return mechanics_schema.jsonify(mechs), 200

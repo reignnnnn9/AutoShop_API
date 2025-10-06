@@ -5,7 +5,7 @@ info:
   title: "Mechanic API"
   description: "This is an API"
   version: "1.0.0"
-host: "127.0.0.1:5000"
+host: "autoshop-api-j2nm.onrender.com"
 schemes:
   - "https"
   - "http"
@@ -44,7 +44,6 @@ paths:
             application/json:
               message: "Welcome Customer"
               token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOj..."
-
 
   /customers: #endpoint
     post: #Post request
@@ -106,7 +105,7 @@ paths:
             $ref: "#/definitions/CustomerResponse"
           examples:
             application/json:
-              id: "0"
+              id: 0
               name: "John Doe"
               email: "johnd@email.com"
               password: "<encrypted password>" 
@@ -129,7 +128,6 @@ paths:
               message:
                 type: string
 
-
   /mechanics:
     post:
       tags:
@@ -148,14 +146,207 @@ paths:
           description: "Mechanic Creation Successful"
           schema:
             $ref: "#/definitions/MechanicResponse"
+          examples:
+            application/json:
+              name: "Test Mech"
+              email: "test@email.com"
+              phone: "123-456-7890"
+              salary: 99999.99
 
+    get:
+      tags:
+        - Mechanics
+      summary: "Returns all Mechanics"
+      description: "Endpoint to receive an array of mechanics objects"
+      responses:
+        200:
+          description: "Successfully retrieved all mechanics"
+          schema:
+            $ref: "#/definitions/MechanicsResponse"
 
-    # get:
+    put:
+      tags:
+        - Mechanics
+      summary: "Update mechanic endpoint"
+      description: "Endpoint to update a mechanic"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Update Mech"
+          required: true
+          schema:
+            $ref: "/definitions/MechanicInput"
+      responses:
+        200:
+          description: "Update Successful"
+          schema:
+            $ref: "#/definitions/MechanicResponse"
+          examples:
+            application/json:
+              id: 2
+              name: "Test Mechanic"
+              email: "test@email.com"
+              phone: "123-456-9999"
+              salary: 99999.99
 
-    # put:
+    delete:
+      tags:
+        - Mechanics
+      summary: "Delete a Mechanic"
+      description: "Delete a Mechanic from DB"
+      responses:
+        200:
+          schema:
+            type: object
+            properties:
+              messsage:
+                type: string
 
-    # delete:
+  /parts:
+    post:
+      tags:
+        - Parts
+      summary: "Endpoint to generate a new part"
+      description: "Endpoint to create a new part in Inventory of AutoShop system."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Info required to create a new part."
+          required: true
+          schema:
+            $ref: "#/definitions/PartsInput"
+      responses:
+        201:
+          description: "Part Creation Successful"
+          schema:
+            $ref: "#/definitions/PartsResponse"
+          examples:
+            application/json:
+              part: "Test"
+              price: 19.99
+      
+    get:
+      tags:
+        - Parts
+      summary: "Returns all Parts"
+      description: "Endpoint to receive an array of parts objects"
+      responses:
+        200:
+          description: "Successfully retreived all parts"
+          schema:
+            $ref: "#/definitions/PartsResponse"
 
+    put:
+      tags:
+        - Parts
+      summary: "Update a Part"
+      description: "Endpoint to update a Part"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Update Part"
+          required: true
+          schema:
+            $ref: "#/definitions/PartsInput"
+      responses:
+        200:
+          description: "Update Successful"
+          schema:
+            $ref: "#/definitions/PartsResponse"
+          examples:
+            application/json:
+              id: 1
+              part: "TestPart"
+              price: 9.99
+
+    delete:
+      tags:
+       - Parts
+      summary: "Delete a Part"
+      description: "Delete a Part from DB"
+      responses:
+        200:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+
+  /service_tickets:
+    post:
+      tags:
+        - Tickets
+      summary: "Endpoint to create a new Service Ticket"
+      description: "Endpoint to create new ServiceTicket in AutoShop"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Required info for creating new service ticket"
+          required: true
+          schema:
+            $ref: "#/definitions/TicketInput"
+      responses:
+        201:
+          description: "Ticket Creation Successful"
+          schema:
+            $ref: "#/definitions/TicketResponse"
+          examples:
+            application/json:
+              customer_id: "1"
+              ser_desc: "Oil Change"
+              price: 29.99
+              VIN: "B9999999999999999"
+              ser_date: "2025-09-30"
+
+    get:
+      tags:
+        - Tickets
+      summary: "Return all ServiceTickets"
+      description: "Endpoint to receive an array of tickets objects"
+      responses:
+        200:
+          description: "Successfully retrieved all tickets"
+          schema:
+            $ref: "#/definitions/TicketsResponse"
+
+    put:
+      tags:
+        - Tickets
+      summary: "Update a Ticket"
+      description: "Endpoint to update a ticket"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Update Ticket"
+          required: true
+          schema:
+            $ref: "#/definitions/TicketInput"
+      responses:
+        200:
+          description: "Update Successful"
+          schema:
+            $ref: "#/definitions/TicketResponse"
+          examples:
+            application/json:
+              id: 1
+              customer_id: "2"
+              ser_desc: "Oil Change + Brake Pads"
+              price: 129.99
+              VIN: "B9999999999999999"
+              ser_date: "2025-09-30"
+
+    delete:
+      tags:
+        - Tickets
+      summary: "Delete a Ticket"
+      description: "Delete a Ticket from DB"
+      responses:
+        200:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
 
 definitions:
 
@@ -203,6 +394,7 @@ definitions:
       - email
       - DOB
       - password
+      - phone
 
   CustomerResponse:
     type: "object"
@@ -243,3 +435,140 @@ definitions:
           DOB:
             type: "string"
             format: date
+
+  MechanicInput:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      email:
+        type: "string"
+      phone:
+        type: "string"
+      salary:
+        type: float
+      
+    required:
+      - name
+      - email
+      - phone
+      - salary
+
+  MechanicResponse:
+    type: "object"
+    properties:
+      id:
+        type: "int"
+      name:
+        type: "string"
+      email:
+        type: "string"
+      phone:
+        type: "string"
+      salary:
+        type: float
+      
+    MechanicsResponse:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          id:
+            type: "int"
+          name:
+            type: "string"
+          email:
+            type: "string"
+          phone:
+            type: "string"
+          salary:
+            type: float
+
+  PartInput:
+    type: "object"
+    properties:
+      part:
+        type: "string"
+      price:
+        type: float
+      
+    required:
+      - part
+      - price
+
+  PartResponse:
+    type: "object"
+    properties:
+      id:
+        type: "int"
+      part:
+        type: "string"
+      price:
+        type: float
+      
+    PartsResponse:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          id:
+            type: "int"
+          part:
+            type: "string"
+          price:
+            type: float
+
+  TicketInput:
+    type: "object"
+    properties:
+      customer_id:
+        type: "int"
+      ser_desc:
+        type: "string"
+      price:
+        type: float
+      VIN:
+        type: "string"
+      ser_date:
+        type: "string"
+        format: "date"
+      
+    required:
+      - part
+      - price
+
+  TicketResponse:
+    type: "object"
+    properties:
+      id:
+        type: "int"
+      customer_id:
+        type: "int"
+      ser_desc:
+        type: "string"
+      price:
+        type: float
+      VIN:
+        type: "string"
+      ser_date:
+        type: "string"
+        format: "date"
+      
+    TicketsResponse:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          id:
+            type: "int"
+          customer_id:
+            type: "int"
+          ser_desc:
+            type: "string"
+          price:
+            type: float
+          VIN:
+            type: "string"
+          ser_date:
+            type: "string"
+            format: "date"
