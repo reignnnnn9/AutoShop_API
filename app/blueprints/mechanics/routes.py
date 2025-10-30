@@ -74,7 +74,7 @@ def get_popular_mechs():
     output = []
     for mech in mechs[:5]:
         mech_format = {
-            "mech": mechanic_schema.dump(mech), # Translates the mech to json
+            "mech": mechanic_schema.dump(mech) if mech.service_tickets else {}, # Translates the mech to json
             "serviced": len(mech.service_tickets) # Add the amount of serviced customers
         }
         output.append(mech_format) # Appends this dict to an output list
