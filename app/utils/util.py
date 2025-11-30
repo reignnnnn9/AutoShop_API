@@ -4,7 +4,7 @@ from flask import request, jsonify
 from jose import jwt
 import jose, os
 
-SECRET_KEY = os.environ.get('SECRET_KEY') or "super secret secrets"
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 def token_required(f):
     @wraps(f)
