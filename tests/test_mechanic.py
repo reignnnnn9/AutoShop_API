@@ -21,7 +21,7 @@ class TestMechanic(unittest.TestCase):
             "name": "test2",
             "email": "test2@email.com",
             "phone": "098-765-4321",
-            "salary": "66666.99"
+            "salary": 66666.99
         }
         response = self.client.post("/mechanics", json=mech_payload)
         print(response.json)
@@ -38,7 +38,7 @@ class TestMechanic(unittest.TestCase):
             "name": "test2",
             "email": "NEWtest2@email.com",
             "phone": "098-765-4321",
-            "salary": "66966.99"
+            "salary": 66966.99
         }
         response = self.client.put('/mechanics/1', json=update_payload)
         print(response.json)

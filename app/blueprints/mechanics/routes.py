@@ -59,6 +59,8 @@ def update_mech(mechanic_id):
 @mechanic_bp.route('<int:mechanic_id>', methods=['DELETE'])
 def delete_mech(mechanic_id):
     mech = db.session.get(Mechanics, mechanic_id)
+    if not mech:
+        return jsonify({"message": "Mechanic not found"}), 404
     db.session.delete(mech)
     db.session.commit()
     return jsonify({"message": f"Successfully deleted mechanic {mechanic_id}"}), 200
@@ -74,7 +76,7 @@ def get_popular_mechs():
     output = []
     for mech in mechs[:5]:
         mech_format = {
-            "mech": mechanic_schema.dump(mech) if mech.service_tickets else {}, # Translates the mech to json
+            "mech": mechanic_schema.dump(mech) if len(mech.service_tickets) > 0 else {}, # Translates the mech to json
             "serviced": len(mech.service_tickets) # Add the amount of serviced customers
         }
         output.append(mech_format) # Appends this dict to an output list
