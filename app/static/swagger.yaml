@@ -5,7 +5,7 @@ info:
   title: "Mechanic API"
   description: "This is an API"
   version: "1.0.0"
-host: "autoshop-api-j2nm.onrender.com"
+host: "127.0.0.1:5000"
 schemes:
   - "https"
   - "http"
